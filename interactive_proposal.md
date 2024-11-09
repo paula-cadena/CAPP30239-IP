@@ -52,3 +52,8 @@ The project will utilize **Option B: Dynamic Ensemble**, combining multiple inte
 1. Would D3.js be better suited for this project over Altair for customization?
 2. Is it advisable to handle projections differently from actual data within visualizations to make the distinction clearer?
 3. I had another idea for the second visualization: instead of just showing general migration trends, this selection would display a 'typical' migrant profile by year and country, along with additional data (e.g., for USA in 1950, it could show a female migrant, age 50, and an overview of migration distribution by age and sex). Would this approach of displaying a 'typical' migrant be more meaningful, or would a broader statistical overview be more impactful?
+
+---
+
+## Mockup
+![Project Mockup](proposal.jpg)
