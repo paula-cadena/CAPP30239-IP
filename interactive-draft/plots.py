@@ -1,10 +1,10 @@
 import altair as alt
-import dash_vega_components as dvc
 import pandas as pd
 import panel as pn
 from vega_datasets import data
 alt.data_transformers.enable('vegafusion')
 from clean import clean_total_stock, clean_estimates
+pn.extension('vega')
 
 def migration_flow(selected_year=2020):
     total_stock = clean_total_stock()
@@ -92,8 +92,11 @@ def migration_rate():
 
     return points + lines
 
+flow = migration_flow().to_dict(format="vega")
+rate = migration_rate().to_dict(format="vega")
+
 dashboard = pn.Row(
-    pn.Row(migration_flow(), migration_rate()),
+    pn.Column(flow, rate),
 )
 
 dashboard.save("/Users/paulacadena/Git-Hub/CAPP30239-IP/www/index.html", embed=True)
