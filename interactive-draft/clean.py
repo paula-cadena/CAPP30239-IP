@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
+import csv
 
+countries_data = "/Users/paulacadena/Git-Hub/CAPP30239-IP//data/country-coord.csv"
 def clean_total_stock():
     #Data frame
     total_stock = pd.read_excel("/Users/paulacadena/Git-Hub/CAPP30239-IP/data/undesa_pd_2020_ims_stock_by_sex_destination_and_origin.xlsx", 
@@ -17,7 +19,7 @@ def clean_total_stock():
                                 "Location code of origin":"Origin code"}, inplace =True)
 
     #Keep only countries for destination and origin (original data frame has aggregations)
-    countries = pd.read_csv("/Users/paulacadena/Git-Hub/CAPP30239-IP//data/country-coord.csv")
+    countries = pd.read_csv(countries_data)
     #1. Destination
     total_stock['M1']=total_stock["Destination code"].isin(countries["Numeric code"])
     #2. Origin
@@ -64,3 +66,10 @@ def clean_estimates():
         }, inplace=True
     )
     return estimates
+
+def countries_dict():
+    country_dict = {}
+    with open(countries_data, mode='r') as file:
+        reader = csv.DictReader(file)
+        country_dict = {row['Country']: row['Numeric code'] for row in reader}
+    return country_dict

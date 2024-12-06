@@ -1,17 +1,15 @@
 import altair as alt
 import pandas as pd
-import panel as pn
 from vega_datasets import data
 alt.data_transformers.enable('vegafusion')
 from clean import clean_total_stock, clean_estimates
-pn.extension('vega')
 
 def migration_flow(selected_year=2020):
     total_stock = clean_total_stock()
     total_stock.drop(total_stock[total_stock['Origin code'] == 2003].index, inplace=True)
 
     countries = pd.read_csv("/Users/paulacadena/Git-Hub/CAPP30239-IP/data/country-coord.csv")
-    countries.rename(columns={"Latitude (average)":"latitude","Longitude (average)":"longitude"}, inplace = True)
+    countries.rename(columns={"Latitude (average)":"latitude", "Longitude (average)":"longitude"}, inplace=True)
 
     source = alt.topo_feature(data.world_110m.url, 'countries')
 
@@ -23,18 +21,29 @@ def migration_flow(selected_year=2020):
         countries, key="Numeric code", fields=["Country", "latitude", "longitude"]
     )
 
+    total_stock_filtered = total_stock[total_stock['Year'] == selected_year]
+
+    total_stock_aggregated = total_stock_filtered.groupby('Destination code', as_index=False).agg(
+        Migrants=('Migration', 'sum')
+    )
+
     background = alt.Chart(source).mark_geoshape(
-        fill="lightgray",
         stroke="white"
+    ).encode(
+        color=alt.Color(
+            'Migrants:Q',
+            #scale=alt.Scale(scheme='blues'),
+            legend=alt.Legend(title='Total Immigrants')
+        )
+    ).transform_lookup(
+        lookup="id",
+        from_=alt.LookupData(total_stock_aggregated, key="Destination code", fields=["Migrants"])
     ).properties(
-        width=750,
-        height=500
+        width=1350,
+        height=900
     ).project('equalEarth')
 
-    if selected_year:
-        total_stock = total_stock[total_stock['Year'] == selected_year]
-
-    connections = alt.Chart(total_stock).mark_rule(opacity=0.1).encode(
+    connections = alt.Chart(total_stock_filtered).mark_rule(opacity=0.1).encode(
         latitude="latitude:Q",
         longitude="longitude:Q",
         latitude2="lat2:Q",
@@ -50,14 +59,13 @@ def migration_flow(selected_year=2020):
         select_country
     )
 
-    points = alt.Chart(total_stock).mark_circle().encode(
+    points = alt.Chart(total_stock_filtered).mark_circle(size=0).encode(
         latitude="latitude:Q",
         longitude="longitude:Q",
-        size=alt.Size("Migrants:Q").legend(None).scale(range=[0, 1000]),
-        order=alt.Order("Migrants:Q").sort("descending"),
-        tooltip=["Country:N", "Migrants:Q"]
+        order=alt.Order("Immigrants:Q").sort("descending"),
+        tooltip=[alt.Tooltip("Country:N"), alt.Tooltip("Immigrants:Q", format=",")]
     ).transform_aggregate(
-        Migrants="sum(Migration)",
+        Immigrants="sum(Migration)",
         groupby=["Destination code"]
     ).transform_lookup(
         lookup="Destination code",
@@ -66,11 +74,11 @@ def migration_flow(selected_year=2020):
         select_country
     ).interactive()
 
-    return (background + connections + points).configure_view(stroke=None)
+    return (background + connections + points).to_dict(format="vega")
 
 def migration_rate():
     estimates = clean_estimates()
-    highlight = alt.selection_point(on='pointerover', fields=['Subregion'], nearest=True)
+    selection = alt.selection_point(fields=['Subregion'], bind='legend')
 
     base = alt.Chart(estimates).encode(
         x=alt.X('Year:O', axis=alt.Axis(title="Year")),
@@ -80,23 +88,12 @@ def migration_rate():
 
     points = base.mark_circle().encode(
         opacity=alt.value(0)
-    ).add_params(
-        highlight
     ).properties(
         width=600
     )
 
     lines = base.mark_line().encode(
-        size=alt.condition(~highlight, alt.value(1), alt.value(3))
-    )
+        size=alt.condition(~selection, alt.value(1), alt.value(3))
+    ).add_params(selection)
 
-    return points + lines
-
-flow = migration_flow().to_dict(format="vega")
-rate = migration_rate().to_dict(format="vega")
-
-dashboard = pn.Row(
-    pn.Column(flow, rate),
-)
-
-dashboard.save("/Users/paulacadena/Git-Hub/CAPP30239-IP/www/index.html", embed=True)
+    return (points + lines).to_dict(format="vega")
