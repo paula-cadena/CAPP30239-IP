@@ -44,7 +44,7 @@ def migration_flow(selected_year=2020):
         from_=alt.LookupData(total_stock_aggregated, key="Destination code", fields=["Migrants"])
     ).properties(
         width=800,
-        height=500
+        height=450
     ).project('equalEarth')
 
     connections = alt.Chart(total_stock_filtered).mark_rule(opacity=0.1).encode(
@@ -101,20 +101,10 @@ def migration_flow(selected_year=2020):
         select_country
     ).properties(
         width=500,
-        height=200
+        height=350
     )
 
-    pie = alt.Chart(sex_stock_filtered).mark_arc().encode(
-        theta=alt.Theta("sum(Migration):Q",stack="normalize"),
-        color=alt.Color("Sex",legend=alt.Legend(title="Sex Distribution"))
-        ).transform_filter(
-        select_country
-        ).properties(
-            width=500,
-            height=200
-        )
-    
-    complete =  (background + connections + points) | (bars & pie)
+    complete =  (background + connections + points) | (bars)
     complete.configure(autosize="fit")
 
     return complete.to_dict(format="vega")
@@ -137,7 +127,7 @@ def migration_rate(selected_year=2020):
         opacity=alt.value(0)
     ).properties(
         width=660,
-        height=300
+        height=400
     )
 
     lines = base.mark_line().encode(
@@ -150,6 +140,6 @@ def migration_rate(selected_year=2020):
         color=alt.Color('Subregion:N')
     ).transform_filter(selection).properties(
         width=340,
-        height=300
+        height=400
     )
     return (points + lines | bars).to_dict(format="vega")
