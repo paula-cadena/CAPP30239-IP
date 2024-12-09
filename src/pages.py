@@ -21,5 +21,5 @@ interactive_plot = pn.bind(migration_rate, selected_year=select)
 select_row = pn.Row(pn.Spacer(width=800), select, sizing_mode='stretch_width')
 plots_region = pn.Column(select_row, interactive_plot)
 
-plots_region.save("/Users/paulacadena/Git-Hub/CAPP30239-IP/www/plots_region.html", 
-                   embed=True)
+# plots_region.save("/Users/paulacadena/Git-Hub/CAPP30239-IP/www/plots_region.html", 
+#                    embed=True)
