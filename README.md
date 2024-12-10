@@ -8,7 +8,7 @@
 
 ## Description
 
-This project aims to visualize global migration trends, highlighting the flow of migrants between countries over time. By providing interactive features that allow users to explore migration data by country, year, and projected future trends, the visualization will help audiences understand migration patterns and factors driving these movements. Users are able to:
+This project aims to visualize global migration trends, highlighting the flow of migrants between countries over time. By providing interactive features that allow users to explore migration data by country, region, and year, the visualization will help audiences understand migration patterns and factors driving these movements. Users are able to:
 
 1. View migration flows on a global map, showcasing movement between countries and years.
 2. Select specific countries and years to examine detailed data on the number of migrants and their origin/destination countries.
