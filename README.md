@@ -26,6 +26,6 @@ This project aims to visualize global migration trends, highlighting the flow of
 
 ---
 ## Screenshots
-![Landing Page](page1.jpg)
-![By country](page2.jpg)
-![By region](page3.jpg)
+![Landing Page](page1.png)
+![By country](page2.png)
+![By region](page3.png)
